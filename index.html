@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRP Projects</title>
+<style>
+  :root{
+    --bg: #FBFBFD;
+    --bg-alt: #F5F5F7;
+    --ink: #1D1D1F;
+    --ink-soft: #6E6E73;
+    --hairline: #D2D2D7;
+    --accent: #0071E3;
+    --accent-soft: #E8F1FD;
+    --card: #FFFFFF;
+    --radius: 20px;
+    --ease: cubic-bezier(.28,.11,.32,1);
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  a{ color:inherit; text-decoration:none; }
+
+  main{
+    flex:1;
+    width:100%;
+    max-width:640px;
+    margin:0 auto;
+    padding:120px 24px 80px;
+  }
+
+  .eyebrow{
+    font-size:13px; font-weight:600; color:var(--accent);
+    letter-spacing:.02em; text-transform:uppercase;
+    margin-bottom:14px;
+    opacity:0; animation:rise .7s var(--ease) forwards;
+  }
+
+  h1{
+    font-size:clamp(36px, 6vw, 52px);
+    font-weight:600;
+    letter-spacing:-0.03em;
+    line-height:1.05;
+    margin-bottom:14px;
+    opacity:0; animation:rise .7s var(--ease) forwards; animation-delay:.08s;
+  }
+
+  .subtitle{
+    font-size:16px;
+    color:var(--ink-soft);
+    line-height:1.5;
+    margin-bottom:56px;
+    opacity:0; animation:rise .7s var(--ease) forwards; animation-delay:.16s;
+  }
+
+  @keyframes rise{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .list{
+    display:flex;
+    flex-direction:column;
+    border-top:1px solid var(--hairline);
+  }
+
+  .row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    padding:22px 4px;
+    border-bottom:1px solid var(--hairline);
+    transition:padding-left .3s var(--ease), background .3s var(--ease);
+    opacity:0; transform:translateY(10px);
+    animation:rowIn .6s var(--ease) forwards;
+  }
+  .row:nth-child(1){ animation-delay:.24s; }
+  .row:nth-child(2){ animation-delay:.30s; }
+  .row:nth-child(3){ animation-delay:.36s; }
+
+  @keyframes rowIn{ to{ opacity:1; transform:translateY(0); } }
+
+  .row:hover{
+    padding-left:12px;
+    background:var(--bg-alt);
+  }
+
+  .row-left{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    min-width:0;
+  }
+
+  .row-icon{
+    flex-shrink:0;
+    width:40px; height:40px;
+    border-radius:11px;
+    background:var(--accent-soft);
+    color:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-size:17px;
+    font-weight:600;
+  }
+
+  .row-text{ min-width:0; }
+
+  .row-text h2{
+    font-size:17px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin-bottom:3px;
+  }
+
+  .row-text p{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .row-arrow{
+    flex-shrink:0;
+    width:13px; height:13px;
+    color:var(--ink-soft);
+    transition:transform .3s var(--ease), color .3s var(--ease);
+  }
+  .row:hover .row-arrow{
+    transform:translateX(3px);
+    color:var(--accent);
+  }
+
+  footer{
+    padding:30px 24px 40px;
+    text-align:center;
+    border-top:1px solid var(--hairline);
+  }
+  footer p{
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+  }
+
+  a:focus-visible{
+    outline:2px solid var(--accent); outline-offset:3px; border-radius:8px;
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="eyebrow">Content &amp; Portfolio</div>
+  <h1>CRP Projects</h1>
+  <p class="subtitle">An index of the products and initiatives under the Content &amp; Rights Portfolio.</p>
+
+  <div class="list">
+
+    <a class="row" href="./" target="_blank" rel="noopener">
+      <div class="row-left">
+        <div class="row-icon">CP</div>
+        <div class="row-text">
+          <h2>Copilot Contributors</h2>
+          <p>Mapping Copilot contributors to Rightsline contributor records</p>
+        </div>
+      </div>
+      <svg class="row-arrow" viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H4M10 2V8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+
+
+  </div>
+</main>
+
+<footer>
+  <p>CRP Projects &middot; updated 2026</p>
+</footer>
+
+</body>
+</html>
