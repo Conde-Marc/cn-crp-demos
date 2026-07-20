@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copilot — Create Contributor (search-first)</title>
+<style>
+:root {
+  --blue: #3b41d8;
+  --blue-hover: #2f34b5;
+  --text: #1a1a1a;
+  --text-2: #4a4a4a;
+  --text-3: #8a8a8a;
+  --border: #d4d4d4;
+  --border-light: #e6e6e6;
+  --bg: #f2f2f2;
+  --green-bg: #e6f4ea; --green-text: #1d6f2b; --green-br: #9ed3ad;
+  --amber-bg: #fdf3d8; --amber-text: #855b00; --amber-br: #e4c675;
+  --blue-bg: #eceef9; --blue-text: #2f34b5;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: var(--text); background: var(--bg); }
+p { margin: 0; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ---------- top bar ---------- */
+.topbar { display: flex; align-items: center; gap: 18px; background: #fff; border-bottom: 1px solid var(--border-light); padding: 10px 20px 10px 0; position: sticky; top: 0; z-index: 20; }
+.flagstrip { width: 60px; align-self: stretch; background: linear-gradient(#5bcefa 0 20%, #f5a9b8 20% 40%, #fff 40% 60%, #f5a9b8 60% 80%, #5bcefa 80% 100%); margin-right: 4px; }
+.brandmark { width: 34px; height: 34px; border-radius: 50%; border: 2.5px solid var(--text); position: relative; flex-shrink: 0; }
+.brandmark::after { content: ""; position: absolute; inset: 5px 12px 5px 5px; border-radius: 50% 0 0 50%; background: var(--text); }
+.wordmark { font-family: Georgia, "Times New Roman", serif; line-height: 1; }
+.wordmark .sup { display: block; font-size: 9px; letter-spacing: 0.02em; }
+.wordmark .mn { display: block; font-size: 26px; font-weight: 400; letter-spacing: -0.5px; }
+.chev { color: var(--text-2); font-size: 13px; }
+.searchbox { flex: 0 1 420px; border: 1px solid var(--border); border-radius: 4px; padding: 10px 13px; font-size: 14px; color: var(--text-3); display: flex; align-items: center; gap: 9px; }
+.tb-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+.create-btn { display: flex; align-items: center; gap: 7px; font-size: 15px; font-weight: 600; border: none; background: none; color: var(--text); padding: 8px 10px; border-radius: 5px; }
+.create-btn:hover { background: #f2f2f2; }
+.ic { color: var(--text-2); font-size: 17px; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; background: #2a2a2a; color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+/* ---------- create dropdown ---------- */
+.dropdown { position: absolute; right: 118px; top: 60px; width: 300px; background: #fff; border: 1px solid var(--border-light); border-radius: 4px; box-shadow: 0 6px 24px rgba(0,0,0,0.16); z-index: 30; display: none; max-height: 70vh; overflow: auto; }
+.dropdown.open { display: block; }
+.dd-top { padding: 14px 22px; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-light); }
+.dd-label { padding: 14px 22px 6px; font-size: 15px; font-weight: 700; }
+.dd-item { padding: 9px 22px; font-size: 15px; cursor: pointer; }
+.dd-item:hover, .dd-item.hi { background: #f0f0f0; }
+
+/* ---------- page ---------- */
+.page { max-width: 1180px; margin: 0 auto; padding: 26px 24px 90px; }
+.crumbs { font-size: 13px; color: var(--text-3); margin-bottom: 14px; }
+.pagehead { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 26px; }
+h1 { font-size: 40px; font-weight: 700; margin: 0; letter-spacing: -0.5px; }
+.modified { font-size: 15px; color: var(--text-2); margin-top: 8px; }
+.actionbar { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--border-light); border-radius: 6px; padding: 9px 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.abtn { border: 1px solid var(--border); background: #fff; border-radius: 4px; font-size: 14px; font-weight: 600; padding: 9px 15px; color: var(--text); }
+.abtn.pub { background: var(--blue); border-color: var(--blue); color: #fff; }
+.abtn.pub:hover { background: var(--blue-hover); }
+.dots { font-size: 18px; color: var(--blue); padding: 0 6px; letter-spacing: 1px; }
+
+.card { background: #fff; border: 1px solid var(--border-light); border-radius: 4px; padding: 26px 30px 32px; }
+.fl { font-size: 14px; font-weight: 700; margin: 0 0 7px; }
+.fi { width: 100%; height: 44px; font-size: 15px; font-family: inherit; padding: 0 13px; border: 1px solid var(--border); border-radius: 4px; background: #fff; color: var(--text); }
+.fi:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(59,65,216,0.25); }
+.fi[readonly] { background: #f7f7f7; color: var(--text-2); }
+.fblock { margin-bottom: 20px; }
+.chars { font-size: 13px; color: var(--text-3); text-align: right; margin-top: 5px; }
+.fi.tall { height: 60px; }
+.dropzone { border: 1px dashed var(--border); border-radius: 4px; height: 190px; width: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-size: 13px; color: var(--text-2); }
+.dz-btn { border: 1px solid var(--border); background: #fff; border-radius: 4px; color: var(--blue); font-weight: 700; font-size: 14px; padding: 9px 16px; }
+
+/* ---------- RL summary ---------- */
+.rlsum { border: 1px solid var(--green-br); background: var(--green-bg); border-radius: 6px; padding: 16px 18px; margin-bottom: 24px; }
+.rl-top { display: flex; align-items: center; gap: 12px; }
+.rl-av { width: 44px; height: 44px; border-radius: 50%; background: #fff; border: 1px solid var(--green-br); color: var(--green-text); font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.rl-name { font-size: 17px; font-weight: 700; color: var(--green-text); }
+.rl-sub { font-size: 13px; color: var(--green-text); opacity: 0.85; margin-top: 2px; }
+.rl-badge { margin-left: auto; font-size: 12px; font-weight: 700; background: #fff; border: 1px solid var(--green-br); color: var(--green-text); border-radius: 999px; padding: 5px 12px; display: flex; align-items: center; gap: 6px; }
+.rl-grid { display: flex; flex-wrap: wrap; gap: 30px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--green-br); }
+.rl-k { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--green-text); opacity: 0.75; }
+.rl-v { font-size: 14px; color: var(--green-text); font-weight: 600; margin-top: 3px; }
+.rlsum.amber { border-color: var(--amber-br); background: var(--amber-bg); }
+.rlsum.amber .rl-av { border-color: var(--amber-br); color: var(--amber-text); }
+.rlsum.amber .rl-name, .rlsum.amber .rl-sub, .rlsum.amber .rl-k, .rlsum.amber .rl-v { color: var(--amber-text); }
+.rlsum.amber .rl-badge { border-color: var(--amber-br); color: var(--amber-text); }
+.rlsum.amber .rl-grid { border-top-color: var(--amber-br); }
+
+/* ---------- modal ---------- */
+.ov { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: flex-start; justify-content: center; padding: 70px 20px 30px; z-index: 40; overflow: auto; }
+.ov.open { display: flex; }
+.modal { background: #fff; border-radius: 6px; width: 660px; max-width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.25); }
+.m-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 26px 30px 6px; }
+.m-title { font-size: 28px; font-weight: 600; }
+.m-x { border: none; background: none; font-size: 24px; color: var(--text-2); line-height: 1; padding: 2px 6px; }
+.m-body { padding: 12px 30px 22px; }
+.m-lead { font-size: 15px; color: var(--text-2); margin-bottom: 18px; line-height: 1.5; }
+.m-foot { display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--border-light); padding: 18px 30px; }
+.m-cancel { border: none; background: none; color: var(--blue); font-size: 15px; font-weight: 700; padding: 11px 18px; }
+.m-create { border: none; background: var(--blue); color: #fff; font-size: 15px; font-weight: 700; padding: 11px 26px; border-radius: 4px; }
+.m-create:disabled { background: #c3c5e8; cursor: not-allowed; }
+
+.searchrow { position: relative; }
+.searchrow .si { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-3); font-size: 16px; }
+.m-search { width: 100%; height: 48px; font-size: 15px; font-family: inherit; padding: 0 14px 0 40px; border: 1px solid var(--border); border-radius: 4px; }
+.m-search:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(59,65,216,0.25); }
+.hintline { font-size: 13px; color: var(--text-3); margin-top: 8px; display: flex; align-items: center; gap: 6px; }
+
+.status { font-size: 13px; color: var(--text-2); margin: 14px 0 8px; display: none; }
+.status.show { display: block; }
+.reslist { border: 1px solid var(--border-light); border-radius: 4px; margin-top: 6px; display: none; overflow: hidden; }
+.reslist.show { display: block; }
+.res { display: flex; align-items: center; gap: 13px; padding: 13px 15px; cursor: pointer; border-bottom: 1px solid var(--border-light); }
+.res:last-child { border-bottom: none; }
+.res:hover { background: #f6f7fd; }
+.res.sel { background: #eceef9; box-shadow: inset 3px 0 0 var(--blue); }
+.res .av2 { width: 38px; height: 38px; border-radius: 50%; background: var(--blue-bg); color: var(--blue-text); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.res .rw { flex: 1; min-width: 0; }
+.res .rn2 { font-size: 15px; font-weight: 600; }
+.res .rm2 { font-size: 12.5px; color: var(--text-2); margin-top: 2px; }
+.tag { font-size: 11px; font-weight: 700; border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
+.tag.g { background: var(--green-bg); color: var(--green-text); }
+.tag.a { background: var(--amber-bg); color: var(--amber-text); }
+.res-new { background: #fbfbfe; }
+.res-new .av2 { background: var(--blue); color: #fff; }
+.res-new .rm2 { color: var(--blue); font-weight: 600; }
+.noresults { padding: 16px 15px; font-size: 14px; color: var(--text-2); border-bottom: 1px solid var(--border-light); }
+
+.scenarios { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.scn { font-size: 12px; font-weight: 600; border: 1px solid var(--border); background: #fff; border-radius: 999px; padding: 7px 13px; }
+.scn:hover { border-color: var(--blue); color: var(--blue); }
+.note { background: #fff; border: 1px solid var(--border-light); border-radius: 4px; font-size: 13px; color: var(--text-2); padding: 14px 17px; margin-top: 22px; line-height: 1.65; }
+.toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(16px); background: #1a1a1a; color: #fff; font-size: 14px; padding: 12px 20px; border-radius: 5px; opacity: 0; pointer-events: none; transition: 0.2s; z-index: 60; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.spin { display: inline-block; width: 13px; height: 13px; border: 2px solid #c9c9c9; border-top-color: var(--blue); border-radius: 50%; animation: sp 0.7s linear infinite; vertical-align: -2px; margin-right: 7px; }
+@keyframes sp { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="flagstrip"></div>
+  <div class="brandmark"></div>
+  <div class="wordmark"><span class="sup">Condé Nast</span><span class="mn">Traveler</span></div>
+  <span class="chev">&#9662;</span>
+  <div class="searchbox"><span>&#128269;</span> Search for articles, galleries, and more</div>
+  <div class="tb-right">
+    <button class="create-btn" onclick="toggleDD(event)"><span style="font-size:19px; font-weight:400;">&plus;</span> Create</button>
+    <span class="ic">&#9881;</span><span class="ic">?</span>
+    <span class="avatar">MD</span>
+  </div>
+</div>
+
+<div class="dropdown" id="dd">
+  <div class="dd-top"><span>&#8679;</span> Upload Photo / Clip</div>
+  <p class="dd-label">Content</p>
+  <div class="dd-item">Activity</div>
+  <div class="dd-item">Airline</div>
+  <div class="dd-item">Article</div>
+  <div class="dd-item">Audio File</div>
+  <div class="dd-item">Bar</div>
+  <div class="dd-item hi" onclick="openModal()">Contributor</div>
+  <div class="dd-item">Curated Search</div>
+  <div class="dd-item">Destination</div>
+  <div class="dd-item">External Link</div>
+  <div class="dd-item">Gallery</div>
+  <div class="dd-item">Gold List</div>
+</div>
+
+<div class="page">
+
+  <div class="scenarios" id="scenarios">
+    <span style="font-size:12px; color:var(--text-3);">Demo:</span>
+    <button class="scn" onclick="run('found')">Search "Testino" → found in Rightsline</button>
+    <button class="scn" onclick="run('dupe')">Search "Ghertner" → already in this market</button>
+    <button class="scn" onclick="run('none')">Search "Neuhaus" → not in Rightsline</button>
+    <button class="scn" onclick="location.reload()">Reset</button>
+  </div>
+
+  <div id="landing">
+    <p class="crumbs">Home</p>
+    <h1>Home</h1>
+    <p class="modified" style="margin-top:14px;">Click <b>Create → Contributor</b> in the top bar (or use a demo button above) to start the new search-first flow.</p>
+    <div class="note" style="max-width:760px;">
+      <b>Flow:</b> Create → Contributor opens a modal in the same pattern as “Create Article”, but slightly bigger and with a Rightsline search. The <b>Create</b> button stays locked until a search has been run and a result chosen. Choosing a Rightsline record creates the Copilot contributor from it and forwards to the edit page, which shows the Rightsline summary at the top.
+    </div>
+  </div>
+
+  <div id="editpage" style="display:none;">
+    <p class="crumbs">Home / Contributors</p>
+    <div class="pagehead">
+      <div>
+        <h1>Contributor</h1>
+        <p class="modified">Last modified on 20 July 2026 at 21:17 by Marc Daeubler</p>
+      </div>
+      <div class="actionbar">
+        <span class="dots">&hellip;</span>
+        <button class="abtn">Preview</button>
+        <button class="abtn">Save</button>
+        <button class="abtn pub">Publish</button>
+        <span class="ic" style="font-size:19px;">&#8677;</span>
+      </div>
+    </div>
+
+    <div id="rlsummary"></div>
+
+    <div class="card">
+      <div class="fblock">
+        <p class="fl">Name</p>
+        <input class="fi" id="eName">
+        <p class="chars" id="eChars">0 chars</p>
+      </div>
+      <div class="fblock">
+        <p class="fl">Title</p>
+        <input class="fi" id="eTitle">
+      </div>
+      <div class="fblock">
+        <p class="fl">Email</p>
+        <input class="fi" id="eEmail">
+      </div>
+      <div class="fblock">
+        <p class="fl">Short Bio</p>
+        <input class="fi tall" id="eShort">
+      </div>
+      <div class="fblock">
+        <p class="fl">Biography</p>
+        <input class="fi tall" id="eBio">
+      </div>
+      <div class="fblock" style="margin-bottom:0;">
+        <p class="fl">Site Image</p>
+        <div class="dropzone">
+          <button class="dz-btn">&#128444; Search</button>
+          <button class="dz-btn">&#8679; Upload</button>
+          <span style="margin-top:6px;">Drag media here to upload</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ---------- modal ---------- -->
+<div class="ov" id="ov">
+  <div class="modal">
+    <div class="m-head">
+      <p class="m-title">Create Contributor</p>
+      <button class="m-x" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="m-body">
+      <p class="m-lead">Contributors start in Rightsline, our source of truth for contributor identity. Search for the person first so the record is linked from the moment it's created.</p>
+
+      <div class="searchrow">
+        <span class="si">&#128269;</span>
+        <input class="m-search" id="msearch" placeholder="Search Rightsline by name or email…" autocomplete="off" oninput="onType()">
+      </div>
+      <p class="hintline">Searches Rightsline and existing Condé Nast Traveler contributors.</p>
+
+      <p class="status" id="status"></p>
+      <div class="reslist" id="reslist"></div>
+    </div>
+    <div class="m-foot">
+      <button class="m-cancel" onclick="closeModal()">Cancel</button>
+      <button class="m-create" id="mcreate" disabled onclick="doCreate()">Create</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const RL = [
+  { id:'51077', name:'Mario Testino', email:'studio@mariotestino.com', type:'Photographer', agr:'Photography master · C-2208', status:'Active', dupe:false, q:'testino' },
+  { id:'48922', name:'Zoë Ghertner',  email:'mgmt@zoeghertner.com',   type:'Photographer', agr:'Editorial framework 2024', status:'Active', dupe:true,  q:'ghertner' }
+];
+let picked = null, timer = null, toastTimer = null;
+
+function toggleDD(e){ e.stopPropagation(); document.getElementById('dd').classList.toggle('open'); }
+document.addEventListener('click', () => document.getElementById('dd').classList.remove('open'));
+
+function openModal(){
+  document.getElementById('dd').classList.remove('open');
+  document.getElementById('ov').classList.add('open');
+  reset();
+  setTimeout(()=>document.getElementById('msearch').focus(), 40);
+}
+function closeModal(){ document.getElementById('ov').classList.remove('open'); }
+function reset(){
+  picked = null;
+  document.getElementById('msearch').value = '';
+  document.getElementById('reslist').classList.remove('show');
+  document.getElementById('reslist').innerHTML = '';
+  document.getElementById('status').classList.remove('show');
+  lockCreate(true, 'Create');
+}
+function lockCreate(lock, label){
+  const b = document.getElementById('mcreate');
+  b.disabled = lock;
+  if (label) b.textContent = label;
+}
+
+function onType(){
+  const q = document.getElementById('msearch').value.trim().toLowerCase();
+  const st = document.getElementById('status');
+  const rl = document.getElementById('reslist');
+  picked = null; lockCreate(true, 'Create');
+  clearTimeout(timer);
+  if (q.length < 2){ st.classList.remove('show'); rl.classList.remove('show'); return; }
+  st.classList.add('show');
+  st.innerHTML = '<span class="spin"></span>Searching Rightsline…';
+  rl.classList.remove('show');
+  timer = setTimeout(() => render(q), 550);
+}
+
+function render(q){
+  const hits = RL.filter(r => r.name.toLowerCase().includes(q) || r.email.toLowerCase().includes(q) || r.q.includes(q));
+  const st = document.getElementById('status');
+  const rl = document.getElementById('reslist');
+  const typed = document.getElementById('msearch').value.trim();
+  st.innerHTML = hits.length ? hits.length + ' result' + (hits.length>1?'s':'') + ' in Rightsline' : 'No match in Rightsline';
+  let html = '';
+  if (!hits.length) html += '<div class="noresults">Nobody matching “' + typed + '” exists in Rightsline yet.</div>';
+  hits.forEach(r => {
+    const init = r.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    html += '<div class="res" data-id="'+r.id+'" onclick="pick(\''+r.id+'\', this)">' +
+      '<div class="av2">'+init+'</div><div class="rw"><p class="rn2">'+r.name+'</p>' +
+      '<p class="rm2">Rightsline #'+r.id+' · '+r.type+' · '+r.email+'</p></div>' +
+      (r.dupe ? '<span class="tag a">Already in this market</span>' : '<span class="tag g">In Rightsline</span>') + '</div>';
+  });
+  html += '<div class="res res-new" onclick="pick(\'new\', this)"><div class="av2">+</div>' +
+    '<div class="rw"><p class="rn2">'+(typed||'New contributor')+'</p>' +
+    '<p class="rm2">Create new in Rightsline &amp; Copilot</p></div></div>';
+  rl.innerHTML = html;
+  rl.classList.add('show');
+}
+
+function pick(id, el){
+  document.querySelectorAll('.res').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');
+  picked = id;
+  if (id === 'new') lockCreate(false, 'Create in Rightsline + Copilot');
+  else {
+    const r = RL.find(x=>x.id===id);
+    lockCreate(false, r.dupe ? 'Use existing record' : 'Create linked contributor');
+  }
+}
+
+function doCreate(){
+  const typed = document.getElementById('msearch').value.trim();
+  closeModal();
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('editpage').style.display = 'block';
+  const sum = document.getElementById('rlsummary');
+
+  if (picked === 'new'){
+    setFields(typed, '', '');
+    sum.innerHTML = card('amber', 'N', typed, 'New Rightsline record created from Copilot',
+      'Pending sync', [['Rightsline ID','pending'],['Type','—'],['Agreement','none yet'],['Status','New']]);
+    toast('Created in Rightsline and linked to this Copilot record.');
+    return;
+  }
+  const r = RL.find(x=>x.id===picked);
+  const init = r.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  setFields(r.name, r.type, r.email);
+  sum.innerHTML = card('green', init, r.name, 'Linked to Rightsline — canonical details applied',
+    'Linked', [['Rightsline ID','#'+r.id],['Type',r.type],['Agreement',r.agr],['Status',r.status]]);
+  toast(r.dupe
+    ? 'Using the existing Condé Nast Traveler record, linked to Rightsline #' + r.id + '.'
+    : 'Contributor created and linked to Rightsline #' + r.id + '.');
+}
+
+function card(tone, init, name, sub, badge, rows){
+  return '<div class="rlsum ' + (tone==='amber'?'amber':'') + '">' +
+    '<div class="rl-top"><div class="rl-av">'+init+'</div>' +
+    '<div><p class="rl-name">'+name+'</p><p class="rl-sub">'+sub+'</p></div>' +
+    '<span class="rl-badge">&#128279; '+badge+'</span></div>' +
+    '<div class="rl-grid">' + rows.map(([k,v]) =>
+      '<div><p class="rl-k">'+k+'</p><p class="rl-v">'+v+'</p></div>').join('') + '</div></div>';
+}
+
+function setFields(n, t, e){
+  document.getElementById('eName').value = n;
+  document.getElementById('eTitle').value = t;
+  document.getElementById('eEmail').value = e;
+  document.getElementById('eChars').textContent = n.length + ' chars';
+}
+
+function run(kind){
+  openModal();
+  const map = { found:'Testino', dupe:'Ghertner', none:'Neuhaus' };
+  const el = document.getElementById('msearch');
+  el.value = map[kind];
+  onType();
+}
+function toast(m){
+  const t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 4200);
+}
+</script>
+</body>
+</html>
