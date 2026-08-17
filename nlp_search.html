@@ -18,6 +18,7 @@
           const hostname = new URL(url, window.location.href).hostname;
           isNgrokRequest =
             hostname.endsWith('ngrok-free.app') ||
+            hostname.endsWith('ngrok-free.dev') ||
             hostname.endsWith('ngrok.app') ||
             hostname.endsWith('ngrok.io');
         } catch {
